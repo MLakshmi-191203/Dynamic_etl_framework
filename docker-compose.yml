@@ -1,0 +1,68 @@
+services:
+
+  airflow-webserver:
+    image: apache/airflow:2.9.1
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:Lakshmi%402000@host.docker.internal:5432/postgres
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./:/opt/airflow/project
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+
+    ports:
+      - "8080:8080"
+
+    command: webserver
+
+  airflow-scheduler:
+    image: apache/airflow:2.9.1
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:Lakshmi%402000@host.docker.internal:5432/postgres
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./:/opt/airflow/project
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+
+    command: scheduler
+
+  airflow-init:
+    image: apache/airflow:2.9.1
+
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:Lakshmi%402000@host.docker.internal:5432/postgres
+
+    command: >
+      bash -c "
+      airflow db migrate &&
+      airflow users create
+      --username airflow
+      --password airflow
+      --firstname admin
+      --lastname admin
+      --role Admin
+      --email admin@example.com
+      "
+
+  fastapi-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    environment:
+      - DB_HOST=host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

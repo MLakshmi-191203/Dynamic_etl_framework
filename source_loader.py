@@ -1,40 +1,69 @@
 import pandas as pd
 import os
-from db import get_mysql_conn
-
-# CSV Loader
-def load_csv(config):
-    path = config["file_path"]
-    if not path:
-        raise Exception("❌ file_path is missing in process_control table")
-
-    if not os.path.exists(path):
-        raise Exception(f"❌ File not found: {path}")
-
-    print(f"📂 Loading file from: {path}")
-    df = pd.read_csv(path)
-    return df
+from db import get_pg_conn, get_engine_from_details
+from sqlalchemy import create_engine
 
 
-# MySQL Loader
-def load_mysql(config):
-    conn = get_mysql_conn(config["source_database"])
+def get_connection_details(conn_name):
 
-    query = f"SELECT * FROM {config['source_table']}"
-    df = pd.read_sql(query, conn)
+    conn = get_pg_conn()
+    cur = conn.cursor()
 
+    cur.execute("""
+        SELECT source_system, host, port, database_name, username, password, file_path
+        FROM dyn_etl.connection_parameters
+        WHERE connection_name = %s
+    """, (conn_name,))
+
+    row = cur.fetchone()
     conn.close()
-    return df
+
+    if not row:
+        raise Exception(f"Connection not found: {conn_name}")
+
+    return {
+        "system": row[0],
+        "host": row[1],
+        "port": row[2],
+        "database": row[3],
+        "username": row[4],
+        "password": row[5],
+        "file_path": row[6]
+    }
 
 
-# Source detector
 def load_source(config):
+    """
+    Generic source loader that handles any system supported by SQLAlchemy.
+    """
+    conn_details = get_connection_details(config["source_connection_name"])
+    system = conn_details["system"].upper()
 
-    if config["source_system"].upper() == "CSV":
-        return load_csv(config)
+    # CSV
+    if system == "CSV":
+        path = conn_details["file_path"]
 
-    elif config["source_system"].upper() == "MYSQL":
-        return load_mysql(config)
+        if not os.path.exists(path):
+            raise Exception(f"File not found: {path}")
 
-    else:
-        raise Exception("Unsupported source system")
+        return pd.read_csv(path)
+
+    # Generic DB Load
+    try:
+        engine = get_engine_from_details(conn_details)
+        
+        # Determine if we should use schema
+        table = config["source_table_name"]
+        schema = config.get("source_schema")
+        
+        if schema and schema != "N/A":
+            full_table_name = f"{schema}.{table}"
+        else:
+            full_table_name = table
+
+        df = pd.read_sql(f"SELECT * FROM {full_table_name}", engine)
+        engine.dispose()
+        return df
+
+    except Exception as e:
+        raise Exception(f"Failed to load source from {system}: {e}")

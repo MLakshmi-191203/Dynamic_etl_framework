@@ -1,0 +1,22 @@
+[2026-05-07T10:11:00.350+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-05-07T10:11:00.388+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dynamic_etl_framework.run_csv_mysql scheduled__2026-05-06T00:00:00+00:00 [queued]>
+[2026-05-07T10:11:00.394+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dynamic_etl_framework.run_csv_mysql scheduled__2026-05-06T00:00:00+00:00 [queued]>
+[2026-05-07T10:11:00.396+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 2
+[2026-05-07T10:11:00.409+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): run_csv_mysql> on 2026-05-06 00:00:00+00:00
+[2026-05-07T10:11:00.421+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'dynamic_etl_framework', 'run_csv_mysql', 'scheduled__2026-05-06T00:00:00+00:00', '--job-id', '6', '--raw', '--subdir', 'DAGS_FOLDER/dynamic_etl_dag.py', '--cfg-path', '/tmp/tmpps7kk_qp']
+[2026-05-07T10:11:00.424+0000] {standard_task_runner.py:91} INFO - Job 6: Subtask run_csv_mysql
+[2026-05-07T10:11:00.425+0000] {logging_mixin.py:188} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61 DeprecationWarning: This process (pid=1812) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2026-05-07T10:11:00.427+0000] {standard_task_runner.py:63} INFO - Started process 1814 to run task
+[2026-05-07T10:11:00.470+0000] {task_command.py:426} INFO - Running <TaskInstance: dynamic_etl_framework.run_csv_mysql scheduled__2026-05-06T00:00:00+00:00 [running]> on host 90c7909e023e
+[2026-05-07T10:11:00.544+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='dynamic_etl_framework' AIRFLOW_CTX_TASK_ID='run_csv_mysql' AIRFLOW_CTX_EXECUTION_DATE='2026-05-06T00:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2026-05-06T00:00:00+00:00'
+[2026-05-07T10:11:00.545+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-05-07T10:11:00.612+0000] {logging_mixin.py:188} INFO - ✅ schema_validation module loaded
+[2026-05-07T10:11:00.772+0000] {logging_mixin.py:188} INFO - 🚀 Running Process: csv_mysql
+[2026-05-07T10:11:01.040+0000] {logging_mixin.py:188} INFO - 🚀 Running pipeline for sales
+[2026-05-07T10:11:01.173+0000] {logging_mixin.py:188} INFO - ❌ Failed: File not found: C:\Users\ITS514\Downloads\sales.csv
+[2026-05-07T10:11:01.180+0000] {python.py:237} INFO - Done. Returned value was: None
+[2026-05-07T10:11:01.181+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-05-07T10:11:01.190+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=dynamic_etl_framework, task_id=run_csv_mysql, run_id=scheduled__2026-05-06T00:00:00+00:00, execution_date=20260506T000000, start_date=20260507T101100, end_date=20260507T101101
+[2026-05-07T10:11:01.247+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-05-07T10:11:01.261+0000] {taskinstance.py:3498} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-05-07T10:11:01.264+0000] {local_task_job_runner.py:222} INFO - ::endgroup::
